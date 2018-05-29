@@ -21,3 +21,9 @@ yarn-error.log*
 
 # misc
 .envrc
+
+# codeship
+*.aes
+dockercfg
+credentials.env
+gcr_creds.env

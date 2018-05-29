@@ -2,7 +2,7 @@
 FROM golang:1.10-alpine as builder
 
 RUN apk add --no-cache make curl git gcc musl-dev linux-headers
-RUN curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+RUN curl -sS https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 ADD . /go/src/github.com/smartcontractkit/chainlink
 RUN cd /go/src/github.com/smartcontractkit/chainlink && make build

@@ -1,0 +1,21 @@
+# Image for building and testing
+builder:
+  build:
+    dockerfile: ./internal/ci/Dockerfile
+    context: ./
+  cache: true
+  docker: true
+
+# Chainlink image that will be pushed to docker hub
+app:
+  build:
+    image: j16r/chainlink
+    dockerfile: Dockerfile
+
+# Image which will perform the deploy to GCE
+deploy:
+  image: codeship/google-cloud-deployment
+  add_docker: true
+  encrypted_env_file: gcr_creds.encrypted.env
+  volumes:
+    - ./deploy/:/deploy

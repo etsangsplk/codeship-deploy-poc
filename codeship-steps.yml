@@ -1,0 +1,46 @@
+- name: Test
+  type: parallel
+  steps:
+  - service: builder
+    command: ./internal/ci/go_test
+  # FIXME: Doesn't work, truffle is not in the spot where it's supposed to be
+  # and adding it to the path doesn't work because it can't see the CBOR.sol
+  # etc. dependencies.
+  #- service: builder
+    #command: ./internal/ci/truffle_test
+  # FIXME: Geth doesn't seem to be loading up propery for this to work, could
+  # be a codeship service?
+  #- service: builder
+    #command: ./internal/ci/ethereum_test
+    
+- name: Deploy to Staging
+  type: serial
+  #tag: master
+  steps:
+  - name: Publish RC
+    type: push
+    service: app
+    image_name: j16r/chainlink
+    # FIXME: Should have version here e.g: v{{.Version}}-{{.Timestamp}}
+    image_tag: "{{.Timestamp}}"
+    registry: https://index.docker.io/v1/
+    encrypted_dockercfg_path: dockercfg.encrypted
+  - name: Deploy RC Image
+    service: deploy
+    command: /deploy/gce-deploy.sh 
+
+# FIXME: This pauses the build, which is not quite what we want
+#- name: Deploy to Production
+  #tag: master
+  #type: manual
+  #steps:
+  #- name: Promote RC to Production
+    #type: push
+    #service: builder
+    #image_name: j16r/chainlink
+    #image_tag: latest
+    #registry: https://index.docker.io/v1/
+    #encrypted_dockercfg_path: dockercfg.encrypted
+  #- name: Deploy Production Image
+    #service: deploy
+    #command: /deploy/gce-deploy.sh 
