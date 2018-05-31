@@ -15,7 +15,7 @@
     
 - name: Deploy to Staging
   type: serial
-  #tag: master
+  tag: master
   steps:
   - name: Publish RC
     type: push
@@ -27,20 +27,19 @@
     encrypted_dockercfg_path: dockercfg.encrypted
   - name: Deploy RC Image
     service: deploy
-    command: /deploy/gce-deploy.sh 
+    command: /deploy/gce-deploy.sh
 
-# FIXME: This pauses the build, which is not quite what we want
-#- name: Deploy to Production
-  #tag: master
-  #type: manual
-  #steps:
-  #- name: Promote RC to Production
-    #type: push
-    #service: builder
-    #image_name: j16r/chainlink
-    #image_tag: latest
-    #registry: https://index.docker.io/v1/
-    #encrypted_dockercfg_path: dockercfg.encrypted
-  #- name: Deploy Production Image
-    #service: deploy
-    #command: /deploy/gce-deploy.sh 
+- name: Deploy to Acceptance
+  exclude: ^(master|release|hotfix)
+  type: manual
+  steps:
+  - name: Push Alpha
+    type: push
+    service: app
+    image_name: j16r/chainlink
+    image_tag: latest
+    registry: https://index.docker.io/v1/
+    encrypted_dockercfg_path: dockercfg.encrypted
+  - name: Deploy Acceptance Image
+    service: deploy
+    command: /deploy/gce-deploy.sh
